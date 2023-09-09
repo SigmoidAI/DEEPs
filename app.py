@@ -1,10 +1,7 @@
-import os
 import streamlit as st
 from tools import generate_response
 
-
-import uuid
-
+# Creating the page configuration
 st.set_page_config(
     page_title="DEEPs",
     layout="wide",
@@ -12,6 +9,7 @@ st.set_page_config(
 )
 st.title("Your Biomedical Research AI Agent")
 st.sidebar.header("DEEPs")
+
 
 if "messages" not in st.session_state.keys():
     st.session_state.messages = [{"role": "assistant", "content": "How may I help you?"}]
