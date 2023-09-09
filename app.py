@@ -1,6 +1,8 @@
 import streamlit as st
 from tools import generate_response
 
+BOOKMARKED_LINKS = []
+
 # Creating the page configuration
 st.set_page_config(
     page_title="DEEPs",
@@ -28,7 +30,14 @@ if prompt := st.chat_input():
 if st.session_state.messages[-1]["role"] != "assistant":
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
-            response = generate_response(prompt) 
-            st.write(response) 
-    message = {"role": "assistant", "content": response}    
-    st.session_state.messages.append(message)
+
+            response, links = generate_response(prompt) 
+            # write the output having the response string and afterwards the links in a mardown checkbox
+            # additioanlly add a button to bookmark the link and a continuous check to see if the button is pressed
+            # if it is pressed add the link to the bookmarked links list
+
+            st.markdown(
+                f"""
+                {response} 
+                """
+            )
