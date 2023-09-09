@@ -10,19 +10,25 @@ st.set_page_config(
 st.title("Your Biomedical Research AI Agent")
 st.sidebar.header("DEEPs")
 
-st.session_state.BOOKMARKED_LINKS = []
+st.session_state.BOOKMARKED_LINKS = set()
 
 if "messages" not in st.session_state.keys():
-    st.session_state.messages = [{"role": "assistant", "content": "How may I help you?"}]
+    st.session_state.messages = [{"role": "assistant", "message": "How may I help you?"}]
 
-# Display chat messages
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.write(message["content"])
+# Display chat messages along with te lists of links
+for prompt in st.session_state.messages:
+    with st.chat_message(prompt["role"]):
+        st.write(prompt["message"])
+        if prompt["role"] == "assistant" and "links" in prompt.keys():
+            for link in prompt["links"]:
+                checkbox_id = f"checkbox_{link.replace(' ', '_')}_{prompt['message']}"
+                is_checked = st.checkbox(link, key=checkbox_id)
+                if is_checked:
+                    st.session_state.BOOKMARKED_LINKS.add(link)
 
 # User-provided prompt
 if prompt := st.chat_input():
-    st.session_state.messages.append({"role": "user", "content": prompt})
+    st.session_state.messages.append({"role": "user", "message": prompt})
     with st.chat_message("user"):
         st.write(prompt)
 
@@ -35,16 +41,22 @@ if st.session_state.messages[-1]["role"] != "assistant":
             # Display the response
             st.markdown(response)
 
-            # Create Markdown checkboxes for links
+            # Display links
             for link in links:
                 checkbox_id = f"checkbox_{link.replace(' ', '_')}"
                 is_checked = st.checkbox(link, key=checkbox_id)
-
-                # Add a button to bookmark the link
                 if is_checked:
-                    st.session_state.BOOKMARKED_LINKS.append(link)
+                    st.session_state.BOOKMARKED_LINKS.add(link)
             
-
+            
+            st.session_state.messages.append(
+                {
+                    "role": "assistant",
+                    "message": response,
+                    "links": links,
+                }
+            )
+            
 # Display bookmarked links
 st.sidebar.markdown("### Bookmarked Links")
 for bookmarked_link in st.session_state.BOOKMARKED_LINKS:
