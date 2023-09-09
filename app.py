@@ -1,8 +1,6 @@
 import streamlit as st
 from tools import generate_response
 
-BOOKMARKED_LINKS = []
-
 # Creating the page configuration
 st.set_page_config(
     page_title="DEEPs",
@@ -12,6 +10,7 @@ st.set_page_config(
 st.title("Your Biomedical Research AI Agent")
 st.sidebar.header("DEEPs")
 
+st.session_state.BOOKMARKED_LINKS = []
 
 if "messages" not in st.session_state.keys():
     st.session_state.messages = [{"role": "assistant", "content": "How may I help you?"}]
@@ -31,13 +30,22 @@ if st.session_state.messages[-1]["role"] != "assistant":
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
 
-            response, links = generate_response(prompt) 
-            # write the output having the response string and afterwards the links in a mardown checkbox
-            # additioanlly add a button to bookmark the link and a continuous check to see if the button is pressed
-            # if it is pressed add the link to the bookmarked links list
+            response, links = generate_response(prompt)
 
-            st.markdown(
-                f"""
-                {response} 
-                """
-            )
+            # Display the response
+            st.markdown(response)
+
+            # Create Markdown checkboxes for links
+            for link in links:
+                checkbox_id = f"checkbox_{link.replace(' ', '_')}"
+                is_checked = st.checkbox(link, key=checkbox_id)
+
+                # Add a button to bookmark the link
+                if is_checked:
+                    st.session_state.BOOKMARKED_LINKS.append(link)
+            
+
+# Display bookmarked links
+st.sidebar.markdown("### Bookmarked Links")
+for bookmarked_link in st.session_state.BOOKMARKED_LINKS:
+    st.sidebar.markdown(f"- {bookmarked_link}")
