@@ -19,8 +19,8 @@ st.title("Your Biomedical Research AI Agent")
 # Creating the sidebar
 st.sidebar.header("DEEPs")
 
-if "research_mode" not in st.session_state.keys():
-    st.session_state.research_mode = st.sidebar.toggle("Research Mode", False)
+# if "research_mode" not in st.session_state.keys():
+#     st.session_state.research_mode = st.sidebar.toggle("Research Mode", False)
 
 if "number_of_conversations" not in st.session_state.keys():
     st.session_state.number_of_conversations = 1
@@ -68,7 +68,7 @@ if st.session_state.conversations[st.session_state.current_conversation][-1]["ro
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
 
-            response, links = generate_response(prompt)
+            response, links = generate_response(prompt, )
 
             # Display the response
             st.markdown(response+ "\n" +str(st.session_state.current_conversation))
