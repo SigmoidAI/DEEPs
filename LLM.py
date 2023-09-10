@@ -20,4 +20,6 @@ def extract_information(usersearch):
 def send_to_front(usersearch):
     text_variable, formatted_info = extract_information(usersearch)
     message = get_final_message(text_variable,usersearch)
-    return {'message': message, 'links': formatted_info}
+    # return {'message': message, 'links': formatted_info}
+    return message, set(formatted_info)
+

@@ -1,6 +1,6 @@
 import streamlit as st
 import random
-from tools import generate_response
+from LLM import send_to_front
 
 chat_button_style = """
     width: 150px;
@@ -68,7 +68,7 @@ if st.session_state.conversations[st.session_state.current_conversation][-1]["ro
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
 
-            response, links = generate_response(prompt)
+            response, links = send_to_front(prompt)
 
             # Display the response
             st.markdown(response+ "\n" +str(st.session_state.current_conversation))
