@@ -78,3 +78,59 @@ def generate_response(
         response + '.' + '\n\n' + 'The documents we used to create this response are: '
 
     return response, list(set(documents))
+
+
+
+def get_final_message(text,question):
+
+    '''
+    This function retreives the abstract paragraphs from WiseCube API and the question and returns the final message.
+
+    Args: 
+
+        text : (str) "abstract" type paragraphs, divided by the "\n".
+
+        question: (str) just the question.
+
+    Returns:
+
+        result_text: (str) returns the final message.
+    '''
+
+    prompt = f'''"text":"{text}"
+
+    You have the text above with the "text" tag. These are fragments of articles related with each other by a topic and each article is divided by the \n symbol. Based on these articles, 
+    resume the information and give a impecable response. Keep in mind that you have 2 main parameters: "user" - role of the user, and "question", the question to which this 
+    articles are related and to which you need to answer. Also, make sure to just directly answer, without stating the text this is coming from or any other side details. 
+    "user": biomedical researcher
+    "question": "{question}"'''
+
+    messages=[
+        {
+        "role": "system",
+        "content": "Biotech specialist"
+        },
+        {
+        "role": "user",
+        "content": prompt
+        }
+    ]
+
+    response = openai.ChatCompletion.create(
+    model="gpt-4",
+    messages=messages,
+    temperature=0,
+    max_tokens=5000,
+    top_p=1,
+    frequency_penalty=0,
+    presence_penalty=0
+    )
+
+    result_text = response['choices'][0]['message']['content']
+
+    return result_text
+
+
+
+
+
