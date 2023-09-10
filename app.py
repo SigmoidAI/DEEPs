@@ -9,6 +9,7 @@ st.set_page_config(
 )
 st.title("Your Biomedical Research AI Agent")
 st.sidebar.header("DEEPs")
+st.sidebar.toggle("Research Mode", False)
 
 st.session_state.BOOKMARKED_LINKS = set()
 
@@ -60,4 +61,4 @@ if st.session_state.messages[-1]["role"] != "assistant":
 # Display bookmarked links
 st.sidebar.markdown("### Bookmarked Links")
 for bookmarked_link in st.session_state.BOOKMARKED_LINKS:
-    st.sidebar.markdown(f"- {bookmarked_link}")
+    st.sidebar.markdown(f"📰 {bookmarked_link}")

@@ -72,7 +72,7 @@ def generate_response(
                  "http://www.ncbi.nlm.nih.gov/pubmed/23698708"]
 
     set_system_role(setting)
-    response = get_response_gpt(prompt_input)
+    response = 'eduard te iubesc' #get_response_gpt(prompt_input)
 
     response = 'By synthesizing the information from the documents, we found following information: \n\n ' + \
         response + '.' + '\n\n' + 'The documents we used to create this response are: '
