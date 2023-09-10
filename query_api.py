@@ -21,6 +21,6 @@ def get_resources(user_search):
     resource_dict = dict()
     for title in resources_list:
         resource_dict[title["title"]] = [("abs", title["abs"]), ("source", title["source"])]
-    five_elements = list(resource_dict.items())[:5]
+    five_elements = list(resource_dict.items())[:2]
     return five_elements
 

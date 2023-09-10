@@ -50,7 +50,7 @@ def get_response_gpt(question, temperature=0):
         model="gpt-4",
         messages=sessions[int(st.session_state.current_conversation.split('_')[1])-1],
         temperature=temperature,
-        max_tokens=7000,
+        max_tokens=4000,
         top_p=1,
         frequency_penalty=0,
         presence_penalty=0
@@ -59,27 +59,31 @@ def get_response_gpt(question, temperature=0):
     sessions[int(st.session_state.current_conversation.split('_')[1])-1].append(dict(response['choices'][0]['message']))
     return response['choices'][0]['message']['content']
 
+def intent_detection(question,temperature=0):
+    global sessions
 
-def generate_response(
-    prompt_input: str,
-):
-    """
-    This function will take the prompt input and generate a response
+    current_messages = sessions[int(st.session_state.current_conversation.split('_')[1])-1].copy()
+    current_messages.append(
+        {
+            "role": "user",
+            "content": f'I have this question: {question}. Your task is to classify the question into one of the following categories: "research",\
+              "general".The "research" tag will be about questions about biotech, medicine, and research purposes, and the "general" ones are presumably\
+                about usual questions like "how are you?" or other general questions not related to biology,chemistry,biotech or biochemistry or medicine. As a response return only one word, the tag'
 
-    Args:
-        prompt_input (str): The prompt input from the user
+            # "content": f'I have this question: {question}. Tell me "research" if users questions is about research, and "general" if it is not about research'
+        }
+    )
 
-    Returns:
-        the_answer (dict): The answer from the model
-
-    """
-
-
-
-
-    return response
-
-
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=current_messages,
+        temperature=temperature,
+        max_tokens=4000,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0
+    )
+    return response['choices'][0]['message']['content']
 
 def get_final_message(text,question, setting='You are a Biotech specialist'):
 
@@ -102,13 +106,19 @@ def get_final_message(text,question, setting='You are a Biotech specialist'):
     if len(sessions) < int(st.session_state.current_conversation.split('_')[1]):
         sessions.append(messages.copy())
 
-    prompt = f'''"text":"{text}"
+    intent = intent_detection(question)
 
-    You have the text above with the "text" tag. These are fragments of articles related with each other by a topic and each article is divided by the \n symbol. Based on these articles, 
-    resume the information and give a impecable response. Keep in mind that you have 2 main parameters: "user" - role of the user, and "question", the question to which this 
-    articles are related and to which you need to answer. Also, make sure to just directly answer, without stating the text this is coming from or any other side details. 
-    "user": biomedical researcher
-    "question": "{question}"'''
+    if intent == 'general':
+        prompt = 'Please give me an answer for the following question: ' + question
+    else:
+        prompt = f'''
+        "text":"{text}"
+
+        You have the text above with the "text" tag. These are fragments of articles related with each other by a topic and each article is divided by the \n symbol. Based on these articles, 
+        resume the information and give a impecable response. Keep in mind that you have 2 main parameters: "user" - role of the user, and "question", the question to which this 
+        articles are related and to which you need to answer. Also, make sure to just directly answer, without stating the text this is coming from or any other side details. 
+        "user": biomedical researcher
+        "question": "{question}"'''
 
     # messages=[
     #     {
@@ -130,16 +140,12 @@ def get_final_message(text,question, setting='You are a Biotech specialist'):
     # frequency_penalty=0,
     # presence_penalty=0
     # )
-
+    print(sessions[int(st.session_state.current_conversation.split('_')[1])-1])
     set_system_role(setting)
     response = get_response_gpt(prompt)  #'eduard te iubesc' + prompt_input #
 
-    response = 'By synthesizing the information from the documents, we found following information: \n\n ' + \
-        response + '.' + '\n\n' + 'The documents we used to create this response are: '
+    if intent == 'research':
+        response = 'By synthesizing the information from the documents, we found following information: \n\n ' + \
+            response + '.' + '\n\n' + 'The documents we used to create this response are: '
 
-    return response
-
-
-
-
-
+    return response, intent

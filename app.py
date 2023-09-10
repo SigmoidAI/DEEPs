@@ -71,7 +71,7 @@ if st.session_state.conversations[st.session_state.current_conversation][-1]["ro
             response, links = send_to_front(prompt)
 
             # Display the response
-            st.markdown(response+ "\n" +str(st.session_state.current_conversation))
+            st.markdown(response)
 
             # Display links
             for link in links:
