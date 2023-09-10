@@ -97,6 +97,8 @@ for bookmarked_link in st.session_state.BOOKMARKED_LINKS:
     if is_checked:
         # remove the bookmarked link if the checkbox is checked
         new_bookmarked_links.remove(bookmarked_link)
-st.session_state.BOOKMARKED_LINKS = new_bookmarked_links
 
+if new_bookmarked_links != st.session_state.BOOKMARKED_LINKS:
+    st.session_state.BOOKMARKED_LINKS = new_bookmarked_links
+    st.experimental_rerun()
 
