@@ -18,6 +18,8 @@ def get_resources(user_search):
     payload = json.loads(query)
     response = requests.post(url, headers=header, json=payload).json()
     resources_list = response["data"]["summaryInsights"][0]["data"]["answers"][0]["document"]
-    sources = [resources_list[i]["source"] for i in range(0, len(resources_list) - 1)]
-    return sources
+    resource_dict = dict()
+    for title in resources_list:
+        resource_dict[title["title"]] = [("abs", title["abs"]), ("source", title["source"])]
+    return resource_dict
 
