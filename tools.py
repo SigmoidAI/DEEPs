@@ -2,10 +2,13 @@ import time
 import os
 import openai
 from dotenv import load_dotenv
+import streamlit as st
 
 load_dotenv()
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
+
+sessions = []
 
 messages = [
     {
@@ -14,9 +17,13 @@ messages = [
     }
   ]
 
+sessions.append(messages.copy())
+
 
 def set_system_role(content):
-    messages[0]['content'] = content
+    global sessions
+
+    sessions[int(st.session_state.current_conversation.split('_')[1])-1][0]['content'] = content
 
 
 def restart_chat():
@@ -30,9 +37,9 @@ def restart_chat():
 
 
 def get_response_gpt(question, temperature=0):
-    global messages
+    global sessions
 
-    messages.append(
+    sessions[int(st.session_state.current_conversation.split('_')[1])-1].append(
         {
             "role": "user",
             "content": question
@@ -41,7 +48,7 @@ def get_response_gpt(question, temperature=0):
 
     response = openai.ChatCompletion.create(
         model="gpt-4",
-        messages=messages,
+        messages=sessions[int(st.session_state.current_conversation.split('_')[1])-1],
         temperature=temperature,
         max_tokens=5000,
         top_p=1,
@@ -49,7 +56,7 @@ def get_response_gpt(question, temperature=0):
         presence_penalty=0
     )
 
-    messages.append(dict(response['choices'][0]['message']))
+    sessions[int(st.session_state.current_conversation.split('_')[1])-1].append(dict(response['choices'][0]['message']))
     return response['choices'][0]['message']['content']
 
 
@@ -67,12 +74,18 @@ def generate_response(
         the_answer (dict): The answer from the model
 
     """
+    global messages
+
+    if len(sessions) < int(st.session_state.current_conversation.split('_')[1]):
+        sessions.append(messages.copy())
 
     documents = ["http://www.ncbi.nlm.nih.gov/pubmed/21618594",
                  "http://www.ncbi.nlm.nih.gov/pubmed/23698708"]
 
     set_system_role(setting)
-    response = 'eduard te iubesc' + prompt_input #get_response_gpt(prompt_input)
+    response = get_response_gpt(prompt_input) #'eduard te iubesc' + prompt_input #
+    print(sessions[int(st.session_state.current_conversation.split('_')[1])-1])
+    print(st.session_state.current_conversation)
 
     response = 'By synthesizing the information from the documents, we found following information: \n\n ' + \
         response + '.' + '\n\n' + 'The documents we used to create this response are: '
