@@ -14,6 +14,9 @@ def extract_information(usersearch):
             elif info_type == 'source':
                 formatted_info.append(f"{title}:{info_text}")
 
+    # formatted_info = ['https://acsjournals.onlinelibrary.wiley.com/doi/full/10.3322/caac.21590', 
+    #  'https://onlinelibrary.wiley.com/doi/full/10.3322/caac.21492',
+    #  ]
     return text_variable, formatted_info
 
 

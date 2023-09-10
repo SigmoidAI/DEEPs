@@ -140,7 +140,16 @@ def get_final_message(text,question, setting='You are a Biotech specialist'):
     # frequency_penalty=0,
     # presence_penalty=0
     # )
-    print(sessions[int(st.session_state.current_conversation.split('_')[1])-1])
+
+    # if question.lower() == 'what is cancer?':
+    #     response = 'cancer is a significant global health issue with increasing incidence and mortality rates. The "Cancer statistics, 2020" paper provides a comprehensive overview of the most recent data on cancer incidence, mortality, and survival in the United States. It highlights that the cancer death rate has been steadily declining in the U.S., but there is still a significant burden of cancer in the country. The "Global cancer statistics 2018: GLOBOCAN estimates of incidence and mortality worldwide for 36 cancers in 185 countries" paper provides a global perspective on cancer. It presents estimates of the incidence and mortality of 36 types of cancer in 185 countries. The paper highlights that the global cancer burden is significant and is expected to increase due to the growth and aging of the population.'
+    # elif question.lower() == 'what is the most common cancer?':
+    #     response = 
+
+
+    # ['https://www.nature.com/articles/s41592-018-0260-3',
+    #  ]
+    # time.sleep(3)
     set_system_role(setting)
     response = get_response_gpt(prompt)  #'eduard te iubesc' + prompt_input #
 
