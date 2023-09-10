@@ -1,27 +1,61 @@
 import time
+import os
+import openai
+from dotenv import load_dotenv
 
-def process_llm_output(
-    the_answer: dict,
-):
-    """
-    This function will process the output dictionary output of the model to combine the text and the 
-    links in an appropriate way to be displayed to the user.
+load_dotenv()
 
-    Args:
-        the_answer (dict): The answer from the model
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
-    Returns:
-        main_text (str): The main text of the answer
-        links (list): The unique links of the answer 
-        
-    """
-    main_text = the_answer["message"]
-    links = the_answer["links"]
-    return main_text, list(set(links))
+messages = [
+    {
+      "role": "system",
+      "content": ""
+    }
+  ]
+
+
+def set_system_role(content):
+    messages[0]['content'] = content
+
+
+def restart_chat():
+    global messages
+    messages = [
+        {
+            "role": "system",
+            "content": ""
+        }
+    ]
+
+
+def get_response_gpt(question, temperature=0):
+    global messages
+
+    messages.append(
+        {
+            "role": "user",
+            "content": question
+        }
+    )
+
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=messages,
+        temperature=temperature,
+        max_tokens=5000,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0
+    )
+
+    messages.append(dict(response['choices'][0]['message']))
+    return response['choices'][0]['message']['content']
 
 
 def generate_response(
     prompt_input: str,
+    setting: str = 'You are a biomedical research expert'
 ):
     """
     This function will take the prompt input and generate a response
@@ -31,13 +65,16 @@ def generate_response(
 
     Returns:
         the_answer (dict): The answer from the model
-    
+
     """
-    # some dark magic should happen here
-    # and a function will do something about the prompt aferwards generating the response
-    # in an answer variable that will be returned
-    the_answer = {
-        "message": f"{prompt_input} - This is the output the message that will contain the main idea of the project{prompt_input}",
-        "links": ["https://www.google.com", "https://doogle.com", "https://www.googcom"]
-    }
-    return process_llm_output(the_answer)
+
+    documents = ["http://www.ncbi.nlm.nih.gov/pubmed/21618594",
+                 "http://www.ncbi.nlm.nih.gov/pubmed/23698708"]
+
+    set_system_role(setting)
+    response = 'eduard te iubesc' #get_response_gpt(prompt_input)
+
+    response = 'By synthesizing the information from the documents, we found following information: \n\n ' + \
+        response + '.' + '\n\n' + 'The documents we used to create this response are: '
+
+    return response, list(set(documents))
